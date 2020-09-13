@@ -98,11 +98,11 @@ int main(void)
 		switch (program_counter)
 		{
 			case 1:
-			led_strip_sparkle_two(1,3);
+			smuth();
 			break;
 			
 			case 2:
-			led_strip_sparkle_two(3,4);
+			led_strip_sparkle_two(1,3);
 			break;
 			
 			case 3:
@@ -110,7 +110,7 @@ int main(void)
 			break;
 			
 			case 4:
-			mitt_and_out(0, 40, 0);
+			eplepsi();
 			break;
 			
 			case 5:
