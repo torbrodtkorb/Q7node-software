@@ -52,13 +52,13 @@ void rainbow(void){
 	{
 		uint16_t pos_on_rainbow = (i*5 + NUMBER_OF_LEDS - rainbow_starting_pos) % NUMBER_OF_LEDS;
 		float hue = (float)pos_on_rainbow / (float)NUMBER_OF_LEDS;
-		hslToRgb(hue, 1, 0.195f, &c);
+		hslToRgb(hue, 1, 0.5f, &c);
 		for (uint16_t j = 0; j < 5; j++) {
 			led_strip[i*1 + j] = c;
 		}
 	}
 	update_led_strip(led_strip, NUMBER_OF_LEDS);
-
+	_delay_ms(100);
 }
 void smuth(void){
 	color c;

@@ -98,7 +98,7 @@ int main(void)
 		switch (program_counter)
 		{
 			case 1:
-			smuth();
+			rainbow();
 			break;
 			
 			case 2:
@@ -106,7 +106,7 @@ int main(void)
 			break;
 			
 			case 3:
-			eplepsi();
+			smuth();
 			break;
 			
 			case 4:
