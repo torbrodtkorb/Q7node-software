@@ -98,7 +98,7 @@ int main(void)
 		switch (program_counter)
 		{
 			case 1:
-			rainbow();
+			teest();
 			break;
 			
 			case 2:

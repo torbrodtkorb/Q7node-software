@@ -2,6 +2,8 @@
 #include "ws2812b.h"
 
 color led_strip[NUMBER_OF_LEDS] = {0};
+color list[65] = {0};
+	
 int i = 0;
 uint16_t rainbow_starting_pos = 0;
 
@@ -12,7 +14,49 @@ void led_strip_on(uint16_t red, uint16_t green, uint16_t blue)
 		led_strip[i] = (color){red, green, blue};
 	}
 	update_led_strip(led_strip, NUMBER_OF_LEDS);
+}
 
+ void update_virituell_led_strip(void){
+	
+	for (int i = 0; i < 64; i++){
+		led_strip[i] = list[i];
+		if (i == 15){
+			led_strip[16] = list[i];
+			led_strip[17] = list[i];
+			led_strip[18] = list[i];
+			led_strip[19] = list[i];
+			i = 19;
+		}
+	
+		if (i > 19 && i < 25){
+			led_strip[114-i] = list[i];
+		}
+	
+		if (i > 40 && i < 54){
+			led_strip[130-i] = list[i];
+		}
+		if (i > 53 && i < 64){
+			led_strip[127-i] = list[i];
+		}
+		if (i == 54){
+			led_strip[74] = list[i];
+			led_strip[75] = list[i];
+			led_strip[76] = list[i];
+		}
+
+		update_led_strip(led_strip, NUMBER_OF_LEDS);
+	}
+}
+
+void teest(void){
+	for (uint8_t i = 0; i < 65; i++){
+		list[i] = (color){0,2,2};
+			if (i == 15) {
+				i = 19;
+			}
+		update_virituell_led_strip();
+		_delay_ms(10);
+	}
 }
 
 float hue2rgb(float p, float q, float t) {
@@ -60,6 +104,16 @@ void rainbow(void){
 	update_led_strip(led_strip, NUMBER_OF_LEDS);
 	_delay_ms(100);
 }
+
+void rainbow_test(void){
+	for (uint8_t i = 0; i < NUMBER_OF_LEDS; i++){
+		for (float j = 0; j <= 1; j += (1/(NUMBER_OF_LEDS/9))){
+			
+		}
+		update_led_strip(led_strip, NUMBER_OF_LEDS);
+	}
+}
+
 void smuth(void){
 	color c;
 	for (float hue = 0; hue <= 1; hue = hue + 0.0001) {
@@ -166,7 +220,6 @@ void snake(void){
 	color color_tre = {33, 170, 33};
 	color color_fire = {255, 150, 0};
 
-		
 	for (int i = 0; i < 64; i++){
 		led_strip[i] = (color)color_en;
 		if (i == 15){
@@ -176,7 +229,6 @@ void snake(void){
 			led_strip[18] = (color)color_en;
 			led_strip[19] = (color)color_en;
 		}
-		
 		
 		if (i > 19 && i < 25){
 			led_strip[114-i] = (color)color_en;

@@ -1,6 +1,6 @@
 #ifndef LED_PROGRAMS_H
 #define LED_PROGRAMS_H
-#define NUMBER_OF_LEDS 295
+#define NUMBER_OF_LEDS 95
 
 #ifndef F_CPU
 #define F_CPU 20000000
@@ -36,6 +36,10 @@ void eplepsi(void);
 void snake(void);
 
 void on(void);
+
+void teest(void);
+
+void update_virituell_led_strip(void);
 
 
 
