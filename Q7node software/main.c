@@ -98,15 +98,15 @@ int main(void)
 		switch (program_counter)
 		{
 			case 1:
-			teest();
+			rainbow_to();
 			break;
 			
 			case 2:
-			led_strip_sparkle_two(1,3);
+			smuth();
 			break;
 			
 			case 3:
-			smuth();
+			led_strip_sparkle_two(1,3);
 			break;
 			
 			case 4:

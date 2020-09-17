@@ -41,6 +41,8 @@ void teest(void);
 
 void update_virituell_led_strip(void);
 
+void rainbow_to(void);
+
 
 
 

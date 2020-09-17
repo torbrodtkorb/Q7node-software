@@ -20,14 +20,7 @@ void led_strip_on(uint16_t red, uint16_t green, uint16_t blue)
 	
 	for (int i = 0; i < 64; i++){
 		led_strip[i] = list[i];
-		if (i == 15){
-			led_strip[16] = list[i];
-			led_strip[17] = list[i];
-			led_strip[18] = list[i];
-			led_strip[19] = list[i];
-			i = 19;
-		}
-	
+
 		if (i > 19 && i < 25){
 			led_strip[114-i] = list[i];
 		}
@@ -51,9 +44,11 @@ void led_strip_on(uint16_t red, uint16_t green, uint16_t blue)
 void teest(void){
 	for (uint8_t i = 0; i < 65; i++){
 		list[i] = (color){0,2,2};
+			/*
 			if (i == 15) {
 				i = 19;
 			}
+			*/
 		update_virituell_led_strip();
 		_delay_ms(10);
 	}
@@ -85,6 +80,36 @@ void hslToRgb(float h, float s, float l, color *rgb) {
 	rgb->green = g * 255;
 	rgb->blue = b * 255;
 }
+
+
+
+void rainbow_to(void){
+	for (float hue = 0; hue <= 1; hue = hue + 0.05) {
+
+		for (int i = 0; i < 16; i++){
+			hslToRgb(hue, 1, 0.5, &list[i]);
+			hue +=(float)1.0/16.0;
+			if (hue >= 1.0){
+				hue -= 1.0;
+			}
+		}
+
+		color* dest = list + 16;
+		color* src = list;
+		
+		while (dest != &list[64]){
+			dest->red = src->red;
+			dest->green = src->green;
+			dest->blue = src->blue;
+			
+			dest++;
+			src++;
+		}
+		
+		update_virituell_led_strip();
+	}
+}
+
 
 void rainbow(void){
 	rainbow_starting_pos += 10;
@@ -222,13 +247,6 @@ void snake(void){
 
 	for (int i = 0; i < 64; i++){
 		led_strip[i] = (color)color_en;
-		if (i == 15){
-			i = 19;
-			led_strip[16] = (color)color_en;
-			led_strip[17] = (color)color_en;
-			led_strip[18] = (color)color_en;
-			led_strip[19] = (color)color_en;
-		}
 		
 		if (i > 19 && i < 25){
 			led_strip[114-i] = (color)color_en;
@@ -254,14 +272,6 @@ void snake(void){
 	
 	for (int i = 0; i < 64; i++){
 		led_strip[i] = (color)color_to;
-		if (i == 15){
-			i = 19;
-			led_strip[16] = (color)color_to;
-			led_strip[17] = (color)color_to;
-			led_strip[18] = (color)color_to;
-			led_strip[19] = (color)color_to;
-		}
-		
 		
 		if (i > 19 && i < 25){
 			led_strip[114-i] = (color)color_to;
@@ -287,14 +297,6 @@ void snake(void){
 	
 	for (int i = 0; i < 64; i++){
 		led_strip[i] = (color)color_tre;
-		if (i == 15){
-			i = 19;
-			led_strip[16] = (color)color_tre;
-			led_strip[17] = (color)color_tre;
-			led_strip[18] = (color)color_tre;
-			led_strip[19] = (color)color_tre;
-		}
-		
 		
 		if (i > 19 && i < 25){
 			led_strip[114-i] = (color)color_tre;
@@ -319,14 +321,6 @@ void snake(void){
 	
 	for (int i = 0; i < 64; i++){
 		led_strip[i] = (color)color_fire;
-		if (i == 15){
-			i = 19;
-			led_strip[16] = (color)color_fire;
-			led_strip[17] = (color)color_fire;
-			led_strip[18] = (color)color_fire;
-			led_strip[19] = (color)color_fire;
-		}
-		
 		
 		if (i > 19 && i < 25){
 			led_strip[114-i] = (color)color_fire;
