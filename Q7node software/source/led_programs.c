@@ -111,7 +111,7 @@ void rainbow_to(void){
 }
 
 
-void rainbow(void){
+void rainbow(){
 	rainbow_starting_pos += 10;
 	rainbow_starting_pos %= NUMBER_OF_LEDS;
 	
@@ -121,14 +121,15 @@ void rainbow(void){
 	{
 		uint16_t pos_on_rainbow = (i*5 + NUMBER_OF_LEDS - rainbow_starting_pos) % NUMBER_OF_LEDS;
 		float hue = (float)pos_on_rainbow / (float)NUMBER_OF_LEDS;
-		hslToRgb(hue, 1, 0.5f, &c);
+		hslToRgb(hue, 1, 0.195f, &c);
 		for (uint16_t j = 0; j < 5; j++) {
 			led_strip[i*1 + j] = c;
 		}
 	}
 	update_led_strip(led_strip, NUMBER_OF_LEDS);
-	_delay_ms(100);
+	_delay_ms(5);
 }
+
 
 void rainbow_test(void){
 	for (uint8_t i = 0; i < NUMBER_OF_LEDS; i++){
