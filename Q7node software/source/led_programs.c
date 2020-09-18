@@ -1,8 +1,16 @@
 #include "led_programs.h"
 #include "ws2812b.h"
 
+
 color led_strip[NUMBER_OF_LEDS] = {0};
-color list[65] = {0};
+color list[65];
+
+
+#define RB_CNT 64
+static color rb_strip[RB_CNT];
+
+static void pixelcopy(const color* src, color* dest);
+
 	
 int i = 0;
 uint16_t rainbow_starting_pos = 0;
@@ -19,40 +27,25 @@ void led_strip_on(uint16_t red, uint16_t green, uint16_t blue)
  void update_virituell_led_strip(void){
 	
 	for (int i = 0; i < 64; i++){
-		led_strip[i] = list[i];
-
-		if (i > 19 && i < 25){
-			led_strip[114-i] = list[i];
-		}
-	
-		if (i > 40 && i < 54){
-			led_strip[130-i] = list[i];
-		}
-		if (i > 53 && i < 64){
-			led_strip[127-i] = list[i];
-		}
-		if (i == 54){
-			led_strip[74] = list[i];
-			led_strip[75] = list[i];
-			led_strip[76] = list[i];
-		}
-
-		update_led_strip(led_strip, NUMBER_OF_LEDS);
-	}
-}
-
-void teest(void){
-	for (uint8_t i = 0; i < 65; i++){
-		list[i] = (color){0,2,2};
-			/*
-			if (i == 15) {
-				i = 19;
+		pixelcopy(rb_strip + i, led_strip + i);
+		if (i >= 20 && i <= 24)
+			pixelcopy(rb_strip + i, led_strip + (114 - i));
+		
+		if (i >= 41 && i <= 54) {
+			pixelcopy(rb_strip + i, led_strip + (130 - i));
+			if (i == 54) {
+				pixelcopy(rb_strip + i, led_strip + 74);
+				pixelcopy(rb_strip + i, led_strip + 75);
+				pixelcopy(rb_strip + i, led_strip + 76);
 			}
-			*/
-		update_virituell_led_strip();
-		_delay_ms(10);
+		}
+		if (i > 54) {
+			pixelcopy(rb_strip + i, led_strip + (127 - i));
+		}
 	}
+	update_led_strip(led_strip, NUMBER_OF_LEDS);
 }
+
 
 float hue2rgb(float p, float q, float t) {
 	if(t < 0) t += 1;
@@ -81,9 +74,63 @@ void hslToRgb(float h, float s, float l, color *rgb) {
 	rgb->blue = b * 255;
 }
 
+/****************************************************/
+
+static void pixelcopy(const color* src, color* dest)
+{
+	dest->blue = src->blue;
+	dest->green = src->green;
+	dest->red = src->red;
+}
+
+void rb_extend(char base, color* data, char size)
+{
+	if (base >= size) {
+		return;
+	}
+	
+	color* src = data;
+	color* dest = data + base;
+	while (size--) {
+		pixelcopy(src, dest);
+		src++;
+		dest++;
+	}
+}
 
 
-void rainbow_to(void){
+#define REPEAT 32
+
+void rb(const uint8_t* exit, const uint8_t* off, float inc)
+{
+
+	while (1) {
+		for (float s = 0; s < 1; s += inc) {
+			
+			for (char i = 0; i < REPEAT; i++) {
+				/* Get color from wheel */
+				
+				float hue = s + (float)i/(float)REPEAT;
+				if (hue > 1.0) {
+					hue -= 1.0;
+				}
+				color tmp;
+				hslToRgb(hue, 1, 0.195f, &tmp);
+				pixelcopy(&tmp, rb_strip + i);	
+				
+				if (*exit) return;
+				if (*off == 1) return;
+			}
+			rb_extend(REPEAT, rb_strip, RB_CNT);
+			
+			update_virituell_led_strip();
+		}
+	}
+}
+
+/*******************************************************/
+
+void rainbow(void){
 	for (float hue = 0; hue <= 1; hue = hue + 0.05) {
 
 		for (int i = 0; i < 16; i++){
@@ -105,51 +152,23 @@ void rainbow_to(void){
 			dest++;
 			src++;
 		}
-		
-		update_virituell_led_strip();
+		PORTC.OUTTGL = (0b111 << 0);
+		//update_virituell_led_strip();
 	}
 }
 
 
-void rainbow(){
-	rainbow_starting_pos += 10;
-	rainbow_starting_pos %= NUMBER_OF_LEDS;
-	
-	color c = (color){0, 0, 0};
-	
-	for (uint16_t i = 0; i < NUMBER_OF_LEDS/5; i++)
-	{
-		uint16_t pos_on_rainbow = (i*5 + NUMBER_OF_LEDS - rainbow_starting_pos) % NUMBER_OF_LEDS;
-		float hue = (float)pos_on_rainbow / (float)NUMBER_OF_LEDS;
-		hslToRgb(hue, 1, 0.195f, &c);
-		for (uint16_t j = 0; j < 5; j++) {
-			led_strip[i*1 + j] = c;
-		}
-	}
-	update_led_strip(led_strip, NUMBER_OF_LEDS);
-	_delay_ms(5);
-}
-
-
-void rainbow_test(void){
-	for (uint8_t i = 0; i < NUMBER_OF_LEDS; i++){
-		for (float j = 0; j <= 1; j += (1/(NUMBER_OF_LEDS/9))){
-			
-		}
-		update_led_strip(led_strip, NUMBER_OF_LEDS);
-	}
-}
-
-void smuth(void){
+void smuth(const uint8_t* exit, const uint8_t* off){
 	color c;
 	for (float hue = 0; hue <= 1; hue = hue + 0.0001) {
 		hslToRgb(hue, 1, 0.5f, &c);
 		led_strip_on(c.red, c.green, c.blue);
 		update_led_strip(led_strip, NUMBER_OF_LEDS);
 		_delay_ms(1);
+		if (*exit == 1) return;
+		if (*off == 1) return;
 	}
 }
-
 
 void led_strip_sparkle(uint16_t density, uint16_t speed)
 {
@@ -224,29 +243,15 @@ void led_strip_sparkle_two(uint16_t density, uint16_t speed)
 	_delay_ms(50);
 }
 
-void eplepsi(void)
-{
-	led_strip_on(100,0,0);
-	update_led_strip(led_strip, NUMBER_OF_LEDS);
-	_delay_ms(80);
-	
-	led_strip_on(0,100,0);
-	update_led_strip(led_strip, NUMBER_OF_LEDS);
-	_delay_ms(80);
-	
-	led_strip_on(0,0,100);
-	update_led_strip(led_strip, NUMBER_OF_LEDS);
-	_delay_ms(80);
-
-}
-
-void snake(void){
+void snake(const uint8_t* exit, const uint8_t* off){
 	color color_en = {0, 255, 255};
 	color color_to = {255, 0, 255};
 	color color_tre = {33, 170, 33};
 	color color_fire = {255, 150, 0};
 
 	for (int i = 0; i < 64; i++){
+		if (*exit == 1) return;
+		if (*off == 1) return;
 		led_strip[i] = (color)color_en;
 		
 		if (i > 19 && i < 25){
@@ -272,6 +277,8 @@ void snake(void){
 	
 	
 	for (int i = 0; i < 64; i++){
+		if (*exit == 1) return;
+		if (*off == 1) return;
 		led_strip[i] = (color)color_to;
 		
 		if (i > 19 && i < 25){
@@ -297,6 +304,8 @@ void snake(void){
 	
 	
 	for (int i = 0; i < 64; i++){
+		if (*exit == 1) return;
+		if (*off == 1) return;
 		led_strip[i] = (color)color_tre;
 		
 		if (i > 19 && i < 25){
@@ -321,6 +330,8 @@ void snake(void){
 	
 	
 	for (int i = 0; i < 64; i++){
+		if (*exit == 1) return;
+		if (*off == 1) return;
 		led_strip[i] = (color)color_fire;
 		
 		if (i > 19 && i < 25){
@@ -345,9 +356,4 @@ void snake(void){
 	
 	
 	
-}
-
-void on(void){
-				led_strip[54] = (color){0, 255, 255};
-				update_led_strip(led_strip, NUMBER_OF_LEDS);
 }

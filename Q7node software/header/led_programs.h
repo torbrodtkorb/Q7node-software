@@ -27,21 +27,15 @@ void led_strip_sparkle(uint16_t density, uint16_t speed);
 
 void led_strip_sparkle_two(uint16_t density, uint16_t speed);
 
-void smuth(void);
+void smuth(const uint8_t* exit, const uint8_t* off);
 
-void rainbow(void);
-
-void eplepsi(void);
-
-void snake(void);
-
-void on(void);
-
-void teest(void);
+void snake(const uint8_t* exit, const uint8_t* off);
 
 void update_virituell_led_strip(void);
 
-void rainbow_to(void);
+void rainbow(void);
+
+void rb(const uint8_t* exit, const uint8_t* off, float inc);
 
 
 

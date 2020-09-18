@@ -57,14 +57,14 @@ float hue = 0;
 /* Put your code here */
 static void press_available(enum press_type type) {
 	if (type == PRESS_LONG) {
-		PORTB.OUTTGL = (0b1 << 4);
+		//PORTB.OUTTGL = (0b1 << 4);
 		off = 1;
 		interrupt_capture = 0;
 		program_counter = 0;
 		
 		
 		} else if (type == PRESS_SHORT) {
-		PORTC.OUTTGL = (0b1 << 2);
+		//PORTC.OUTTGL = (0b1 << 2);
 		interrupt_capture = 1;
 	}
 }
@@ -76,6 +76,10 @@ int main(void)
 	interrupt_config();
 	led_config();
 	timer_config();
+	led_strip_on(0,0,0);
+	
+	while (!interrupt_capture);
+	interrupt_capture = 0;
 
 	while (1)
 	{
@@ -98,27 +102,27 @@ int main(void)
 		switch (program_counter)
 		{
 			case 1:
-			rainbow();
+			rb((uint8_t *)&interrupt_capture, (uint8_t *)&off, 0.007);
 			break;
 			
 			case 2:
-			smuth();
+			rb((uint8_t *)&interrupt_capture, (uint8_t *)&off, 0.0015);
 			break;
 			
 			case 3:
-			led_strip_sparkle_two(1,3);
+			smuth((uint8_t *)&interrupt_capture, (uint8_t *)&off);
 			break;
 			
 			case 4:
-			eplepsi();
-			break;
-			
-			case 5:
 			led_strip_sparkle(5,5);
 			break;
 			
+			case 5:
+			led_strip_sparkle_two(1,3);
+			break;
+			
 			case 6:
-			smuth();
+			snake((uint8_t *)&interrupt_capture, (uint8_t *)&off);
 			break;
 		}
 	}
